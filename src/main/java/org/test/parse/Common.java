@@ -40,4 +40,12 @@ public class Common {
 	public static void logln(String msg){
 		System.out.println(msg);
 	}
+	
+	public static boolean isEmpty(String str){
+		if(str == null || str == ""){
+			return true;
+		}
+		
+		return false;
+	}
 }

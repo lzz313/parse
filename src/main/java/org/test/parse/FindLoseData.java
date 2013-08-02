@@ -4,7 +4,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
@@ -54,7 +57,7 @@ public class FindLoseData {
 		int actListIdx = 0;
 		int subMaxIdx = findSubMaxIdx(msgList,msgList.get(0).getMsgRefId(),actListIdx);
 		while(actListIdx < msgList.size()){
-			//Common.logln("subMaxIdx:"+subMaxIdx);
+			findSameIdx(msgList.subList(actListIdx, actListIdx+subMaxIdx));
 			int findActNextFirstIdx = findActCurrLastIdx(msgList, subMaxIdx, actListIdx);
 			actListIdx = findActNextFirstIdx +1;
 			if(actListIdx < msgList.size())
@@ -62,11 +65,37 @@ public class FindLoseData {
 		}
 	}
 	
-	public void findSameIdx(List<MsgRef> subList){
+	public static void findSameIdx(List<MsgRef> subList){
+		MsgRef curr,next;
+		String key;
+		
+		SimpleDateFormat sdf = new SimpleDateFormat();
+		sdf.applyPattern("yyyy-MM-dd HH:mm:ss");
+		Map<String,String> ctMap = new HashMap<String,String>();
+		for (int i = 0; i < subList.size(); i++) {
+			curr = subList.get(i);
+			key = curr.getMsgRefId()+"";
+			if(ctMap.get(key) != null){
+				continue;
+			}
+			for (int j = i+1; j < subList.size(); j++) {
+				next = subList.get(j);
+				if(curr.getMsgRefId().equals(next.getMsgRefId())){
+					String msg = ctMap.get(curr.getMsgRefId()+"");
+					Integer ct = Common.isEmpty(msg)?0:Integer.valueOf(msg.split("#")[0]);
+					ctMap.put(key, ct == 0?1+"#"+sdf.format(curr.getDate()):(ct+1)+"#"+msg.split("#")[1]);
+				}
+			}
+		}
+		
+		for(Entry<String, String> entry:ctMap.entrySet()){
+			Common.logln("repeat#"+entry.getKey()+"#"+entry.getValue());
+		}
 		
 	}
 	
 	/**
+	 * 
 	 * 子序列长度为第一个序列的值
 	 * 由于当前第一个可能不是最大子序列号，需要查找子序列里面最大序列号，如果
 	 * 最大序列号掉到子序列之外就无法查找到。
@@ -84,7 +113,7 @@ public class FindLoseData {
 		for(int i = actListIdx; i < endIdx ; i++){
 			//Common.logln("index:"+i);
 			MsgRef o = msgList.get(i);
-			if(maxIdx < o.getMsgRefId()){
+			if(maxIdx < o.getMsgRefId().intValue()){
 				maxIdx = o.getMsgRefId();
 			} 
 		}
@@ -132,14 +161,14 @@ public class FindLoseData {
 		for(int i = fIdx; i <= eIdx && i < msgList.size(); i++){
 			//Common.logln("index:"+i);
 			MsgRef o = msgList.get(i);
-			if(expect == o.getMsgRefId()){
+			if(expect == o.getMsgRefId().intValue()){
 				return i;
 			}
 			last = i;
 		}
 		SimpleDateFormat sdf = new SimpleDateFormat();
 		sdf.applyPattern("yyyy-MM-dd HH:mm:ss");
-		Common.log(sdf.format(msgList.get(last).getDate()) + " ");
+		Common.log(sdf.format(msgList.get(last).getDate()) + "#");
 		return -1;
 	}
 	
