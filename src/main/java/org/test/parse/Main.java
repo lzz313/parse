@@ -12,6 +12,7 @@ public final class Main {
 			Common.logln("请输入功能参数:");
 			Common.logln("\t-f 数据过滤");
 			Common.logln("\t-l 查找丢失数据");
+			Common.logln("\t-t 转换数据");
 			return;
 		}
 		
@@ -26,6 +27,10 @@ public final class Main {
 				e.printStackTrace();
 			}
 		} 
+		
+		if("-t".equals(args[0])){
+			AnalysisLog.run(args);
+		}
 
 	}
 
