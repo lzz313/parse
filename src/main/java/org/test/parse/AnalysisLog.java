@@ -1,11 +1,17 @@
 package org.test.parse;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 public class AnalysisLog {
 	
 	public static void analysis(String filePath,String encoding){
 		List<String> dataList = Common.readLog(filePath, encoding);
+		
+		SimpleDateFormat sdf = new SimpleDateFormat();
+		sdf.applyPattern("MM-dd HH:mm:ss");
 		
 		String line,nextLine;
 		for (int i = 0; i < dataList.size(); i++) {
@@ -26,14 +32,24 @@ public class AnalysisLog {
 				if(line.split("\\ ").length <3){
 					continue;
 				}
+				
+				String date = line.split("\\ ")[1]+" "+line.split("\\ ")[2];
+				Calendar cal = Calendar.getInstance();
+				try {
+					cal.setTime(sdf.parse(date));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				cal.add(Calendar.HOUR_OF_DAY, 8);
+				date = sdf.format(cal.getTime());
 					
 				String [] firstArr = line.split("\\ ")[3].split(",");
 				
 				for (int j = 0; j < firstArr.length; j++) {
 					if(j==0){
-						Common.log(line.split("\\ ")[1]+ "#" +line.split("\\ ")[2]+"#");
+						Common.log(line.split("\\ ")[1]+ "#" +line.split("\\ ")[2]+"#"+date.replace(" ", "#")+"#");
 					} else {
-						Common.log("##");
+						Common.log("###");
 					}
 					Common.logln(firstArr[j]+"#"+lastTwo);
 				}
