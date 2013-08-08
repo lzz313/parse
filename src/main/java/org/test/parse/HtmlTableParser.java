@@ -26,9 +26,9 @@ public class HtmlTableParser {
                 TableRow tr = rows[r];
                 TableColumn[] td = tr.getColumns();
                 for (int fCols = 0;fCols < filterCols.length;fCols++) {
-					if(td[filterCols[fCols]].toString().indexOf(filters[fCols]) > -1){
+					if(td[filterCols[fCols]].toString().indexOf(filters[fCols]) > -1 || td[filterCols[fCols]].getChildrenHTML().indexOf(filters[fCols]) > -1){
 						for (int dispCols : cols) {
-							System.out.print(td[dispCols].toPlainTextString().trim() + " ");
+							System.out.print(" "+td[dispCols].toPlainTextString().trim() + " ");
 						}
 						System.out.println();
 					}
